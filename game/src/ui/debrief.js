@@ -44,7 +44,7 @@
   }
 
   const Debrief = {
-    show: function (app) {
+    show: function (app, newBest) {
       const state = app.session.state;
       const sc = MD.Sim.score(state);
       const r = state.result;
@@ -67,7 +67,7 @@
         '<div class="sides"><div class="side jp"><h4>KIDO BUTAI 機動部隊</h4>' + sideTable(state, 'J') + '</div>' +
         '<div class="side us"><h4>US PACIFIC FLEET</h4>' + sideTable(state, 'A') + '</div></div>' +
         '<div class="points"><div class="pj">' + sc.J + '<small>JAPAN</small></div><div style="font-size:16px;color:#6a5a3a">—</div><div class="pa">' + sc.A + '<small>USA</small></div></div>' +
-        '<div class="breakdown">' + (parts.join(' · ') || 'No enemy carrier hit') + '</div>' +
+        '<div class="breakdown">' + (parts.join(' · ') || 'No enemy carrier hit') + (newBest ? ' · <b>NEW BEST MARGIN</b>' : '') + '</div>' +
         '<div class="moments">' + moments(state) + '</div>' +
         '<div class="btns"><button class="primary" data-act="again">FIGHT AGAIN</button><button data-act="new">NEW BATTLE</button><button data-act="title">TITLE</button></div>' +
         '</div>';

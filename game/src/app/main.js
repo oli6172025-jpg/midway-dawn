@@ -76,6 +76,7 @@
       $('tutorial').classList.add('hidden');
       $('paused-banner').classList.add('hidden');
       $('title').classList.remove('hidden');
+      MD.Records.render();
       App.resize();
     },
 
@@ -115,7 +116,8 @@
       App.camera.insetRight = Math.min(720, App.camera.w * 0.56);
       App.camera.insetTop = 40;
       App.fitAll();
-      MD.Debrief.show(App);
+      const best = App.fixedNow === null && MD.Records.add(App.session.state);
+      MD.Debrief.show(App, best);
     },
 
     /** Frames every task group, Midway and the day's tracks. */
