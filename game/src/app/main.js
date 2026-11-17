@@ -93,6 +93,9 @@
       App.session.onEvent(function (e) {
         MD.Telegrams.add(e, false);
         if (e.kind === 'end') App.debriefAt = App.now() + 3.5;
+        // The battle camera: when bombs fall, go and watch.
+        if (App.session.autopause && (e.kind === 'bombing' || e.kind === 'midway')) App.camera.flyTo({ x: e.x, y: e.y }, Math.max(App.camera.zoom, 2.4));
+        if (App.session.autopause && e.kind === 'raid') App.camera.flyTo(App.session.state.groups.KB, Math.max(App.camera.zoom, 1.6));
       });
       App.session.drainEvents(App.now());
       App.resize();
