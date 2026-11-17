@@ -34,9 +34,8 @@
         }
       }
       if (c.deck.state === 'spotting' || c.deck.state === 'launching' || c.deck.state === 'unspotting') c.deck.until = Math.max(c.deck.until, c.deckOutUntil);
-      MD.Events.emit(state, 'damage', 'both', MD.Deck.label(c) + (wasOk ? ' damaged' : ' hit again') + ': flight deck out of action until ' + MD.Geo.clock(c.deckOutUntil) + '.', {
-        carrier: c.id, x: c.x, y: c.y, level: 'damaged', urgent: c.side === 'J',
-      });
+      // The attack's own summary reports the damage; only a ship's loss gets a signal of its own.
+      void wasOk;
     },
 
     makeFatal: function (state, c, exposed) {

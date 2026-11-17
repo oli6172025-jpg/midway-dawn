@@ -4,13 +4,71 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MIDWAY: DAWN</title>
-<style>
-  html, body { margin: 0; height: 100%; overflow: hidden; background: #0b2233; }
-  #sea { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas id="sea"></canvas>
+<canvas id="sea" aria-label="The chart of the battle: Kido Butai, Midway, search planes, reports and strikes"></canvas>
+
+<header id="hud" class="hidden">
+  <div class="hud-brand">MIDWAY<span>: DAWN</span></div>
+  <div class="hud-clock">
+    <div id="clock" class="clock">04:30</div>
+    <div class="clock-sub"><span id="sky-phase">Before dawn</span> · 4 June 1942</div>
+  </div>
+  <div class="hud-time" role="group" aria-label="Time controls">
+    <button id="btn-pause" class="tbtn" title="Pause / resume (Space)">❚❚</button>
+    <button data-speed="1" class="tbtn speed on" title="1× (key 1)">1×</button>
+    <button data-speed="2" class="tbtn speed" title="2× (key 2)">2×</button>
+    <button data-speed="4" class="tbtn speed" title="4× (key 3)">4×</button>
+    <label class="autopause" title="Pause automatically on telegrams, raids and strike results"><input id="autopause" type="checkbox" checked> auto-pause</label>
+  </div>
+  <div class="hud-score">
+    <div class="score-side jp"><span class="lbl">JAPAN</span><span id="score-j">0</span></div>
+    <div class="score-vs">pts</div>
+    <div class="score-side us"><span id="score-a">0</span><span class="lbl">USA</span></div>
+    <div class="midway-bar" title="Midway airfield"><span>MIDWAY</span><i><b id="midway-hp" style="width:100%"></b></i></div>
+  </div>
+  <button id="btn-sound" class="tbtn icon" title="Sound on / off (M)">♪</button>
+  <button id="btn-help" class="tbtn icon" title="How to play (H)">?</button>
+</header>
+
+<aside id="fleet" class="panel hidden" aria-label="Carriers of Kido Butai">
+  <div class="panel-title">KIDO BUTAI <span class="kanji">機動部隊</span></div>
+  <div id="cards"></div>
+  <div id="fleet-orders" class="fleet-orders"></div>
+</aside>
+
+<aside id="wire" class="panel hidden" aria-label="Telegrams">
+  <div class="panel-title">SIGNALS <span class="kanji">電報</span></div>
+  <div id="telegrams"></div>
+</aside>
+
+<div id="notice" class="notice hidden" role="status" aria-live="polite"></div>
+<div id="hint" class="hint hidden"></div>
+<div id="tutorial" class="tutorial hidden"></div>
+<div id="paused-banner" class="paused-banner hidden">PAUSED — give orders, then press Space</div>
+
+<section id="title" class="screen hidden">
+  <div class="title-block">
+    <div class="title-kicker">4 JUNE 1942 · THE NORTH PACIFIC</div>
+    <h1>MIDWAY<span>: DAWN</span></h1>
+    <div class="title-kanji">暁 の ミッドウェー</div>
+    <div class="title-sub">Find their carriers before they find yours.</div>
+    <div class="title-menu">
+      <div class="diff" role="radiogroup" aria-label="Difficulty">
+        <button data-diff="novice" class="dbtn">Novice<small>新手</small></button>
+        <button data-diff="historical" class="dbtn on">Historical<small>史実</small></button>
+        <button data-diff="admiral" class="dbtn">Admiral<small>提督</small></button>
+      </div>
+      <div class="seed-row"><label>Battle seed <input id="seed" type="number" min="1" max="999999" value="1942"></label><button id="btn-dice" class="tbtn" title="New seed">⚄</button></div>
+      <button id="btn-start" class="big-btn">TAKE COMMAND</button>
+      <div class="title-keys">Space pause · 1 2 3 speed · drag a carrier card to the chart to launch · right-drag to search</div>
+    </div>
+  </div>
+</section>
+
+<section id="debrief" class="screen hidden" aria-live="polite"></section>
+
 <script src="src/engine/rng.js"></script>
 <script src="src/engine/geometry.js"></script>
 <script src="src/engine/data.js"></script>
@@ -25,6 +83,25 @@
 <script src="src/engine/us-ai.js"></script>
 <script src="src/engine/autopilot.js"></script>
 <script src="src/engine/sim.js"></script>
+<script src="src/view/palette.js"></script>
+<script src="src/view/camera.js"></script>
+<script src="src/view/sea.js"></script>
+<script src="src/view/clouds.js"></script>
+<script src="src/view/ships.js"></script>
+<script src="src/view/aircraft.js"></script>
+<script src="src/view/effects.js"></script>
+<script src="src/view/markers.js"></script>
+<script src="src/view/title-scene.js"></script>
+<script src="src/view/renderer.js"></script>
+<script src="src/audio/sound.js"></script>
+<script src="src/ui/hud.js"></script>
+<script src="src/ui/carrier-cards.js"></script>
+<script src="src/ui/telegrams.js"></script>
+<script src="src/ui/tutorial.js"></script>
+<script src="src/ui/debrief.js"></script>
+<script src="src/ui/input.js"></script>
+<script src="src/app/session.js"></script>
+<script src="src/app/showcase.js"></script>
 <script src="src/app/main.js"></script>
 </body>
 </html>

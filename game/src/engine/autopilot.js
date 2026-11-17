@@ -77,7 +77,8 @@
           const kb = state.groups.KB;
           const aim = project(r, t + 70);
           const d = MD.Geo.dist(kb, aim);
-          out.push({ type: 'course', x: aim.x, y: aim.y });
+          if (d > 140) out.push({ type: 'course', x: aim.x, y: aim.y });
+          else out.push({ type: 'course', heading: MD.Geo.bearing(kb, aim) + 90 });
           out.push({ type: 'speed', kt: d > 180 ? 28 : 24 });
           const holding = state.flights.some(function (f) { return f.side === 'J' && f.phase === 'holding'; });
           for (let i = 0; i < live.length; i++) {

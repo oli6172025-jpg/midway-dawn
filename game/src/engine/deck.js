@@ -89,7 +89,7 @@
         fault = R.int(state, key + ':faultmin', MD.Data.deck.faultMin, MD.Data.deck.faultMax);
         minutes += fault;
       }
-      c.deck = { state: 'spotting', until: state.t + minutes, pkg: pkg, strike: null, after: null, task: 'Spotting strike' };
+      c.deck = { state: 'spotting', since: state.t, until: state.t + minutes, pkg: pkg, strike: null, after: null, task: 'Spotting strike' };
       if (fault > 0 && c.side === 'J') MD.Events.emit(state, 'deck', 'J', label(c) + ': elevator fault — spotting delayed ' + fault + ' min.', { carrier: c.id });
       return ok(label(c) + ': spotting ' + describePkg(c, pkg) + ' — ready ' + MD.Geo.clock(state.t + minutes) + '.');
     },
@@ -98,6 +98,7 @@
     strikeDown: function (state, c, after) {
       if (c.deck.state !== 'spotted' && c.deck.state !== 'spotting') return no(label(c) + ': nothing spotted on deck.');
       c.deck.state = 'unspotting';
+      c.deck.since = state.t;
       c.deck.until = state.t + MD.Data.deck.strikeDown;
       c.deck.task = 'Striking down';
       c.deck.after = after || null;
@@ -125,7 +126,7 @@
         c.rearm = null;
         return ok(label(c) + ': hangar empty — returning planes will be armed with ' + (to === 'ship' ? 'torpedoes / AP bombs' : 'land bombs') + '.');
       }
-      c.rearm = { until: state.t + MD.Data.deck.rearm, to: to };
+      c.rearm = { since: state.t, until: state.t + MD.Data.deck.rearm, to: to };
       return ok(label(c) + ': rearming with ' + (to === 'ship' ? 'torpedoes / AP bombs' : 'land bombs') + ' — done ' + MD.Geo.clock(c.rearm.until) + '.');
     },
 
@@ -198,6 +199,7 @@
       for (let i = 0; i < launching.length; i++) {
         const c = launching[i];
         c.deck.state = 'launching';
+        c.deck.since = state.t;
         c.deck.until = state.t + MD.Data.deck.launch;
         c.deck.strike = flight.id;
         c.deck.task = 'Launching';
@@ -290,7 +292,7 @@
       }
       if (F + D + T + lost === 0) return;
       c.recovering = { F: F, D: D, T: T };
-      c.deck = { state: 'recovering', until: state.t + MD.Data.deck.recover, pkg: null, strike: null, after: null, task: 'Recovering' };
+      c.deck = { state: 'recovering', since: state.t, until: state.t + MD.Data.deck.recover, pkg: null, strike: null, after: null, task: 'Recovering' };
       MD.Events.emit(state, 'deck', c.side, label(c) + ': recovering ' + (F + D + T) + ' aircraft' + (lost ? ' (' + lost + ' lost in deck crashes)' : '') + '.', { carrier: c.id });
       MD.Air.pruneFlights(state);
     },
