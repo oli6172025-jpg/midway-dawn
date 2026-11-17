@@ -84,7 +84,6 @@ export async function launch(width, height) {
     `--window-size=${width},${height}`,
     '--hide-scrollbars',
     '--mute-audio',
-    '--allow-file-access-from-files',
     'about:blank',
   ], { stdio: 'ignore' });
   await waitForDevtools();
