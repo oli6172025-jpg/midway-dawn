@@ -158,17 +158,19 @@
         const e = s.log[i];
         if (e.t !== s.t) continue;
         if (e.kind === 'airbattle') MD.Effects.fromEvent(e, s, now - 1.7);
-        else if (e.kind === 'bombing') MD.Effects.fromEvent(e, s, now - 2.1);
-        else if (e.kind === 'damage') MD.Effects.fromEvent(e, s, now - 2.5);
+        else if (e.kind === 'bombing') MD.Effects.fromEvent(e, s, now - 2.6);
+        else if (e.kind === 'damage') MD.Effects.fromEvent(e, s, now - 3.4);
       }
       // A second wave of bursts still landing, so the frame shows the attack at its height.
       for (const id in hit.tally) {
         const c = s.carriers[id];
-        MD.Effects.explosion({ x: c.x + 0.6, y: c.y - 0.4 }, now - 0.35, false);
-        MD.Effects.explosion({ x: c.x - 0.5, y: c.y + 0.3 }, now - 0.2, true);
+        MD.Effects.explosion({ x: c.x + 0.25, y: c.y - 0.2 }, now - 0.45, false);
+        MD.Effects.explosion({ x: c.x - 0.2, y: c.y + 0.15 }, now - 0.7, false);
       }
       for (let i = 0; i < 4; i++) MD.Effects.splash({ x: g.x + Math.sin(i * 1.7) * 3, y: g.y + Math.cos(i * 2.3) * 3 }, now - 0.3 - i * 0.2);
-      app.camera.jump({ x: g.x + 3, y: g.y - 2 }, 3.4);
+      const burning = Object.keys(hit.tally).map(function (id) { return s.carriers[id]; }).filter(function (c) { return c.status === 'fatal'; })[0];
+      const focus = burning || g;
+      app.camera.jump({ x: focus.x + 4, y: focus.y - 1.5 }, 3.8);
       MD.Cards.update();
     },
 

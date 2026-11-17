@@ -48,8 +48,7 @@ try {
     if (only && !shot.name.startsWith(only) && !shot.name.startsWith('0' + only)) continue;
     await capture(page, shot);
   }
-  if (page.logs.length) console.log(page.logs.join('
-'));
+  if (page.logs.length) console.log(page.logs.join('\n'));
 } finally {
   close();
 }

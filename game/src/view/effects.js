@@ -105,18 +105,21 @@
     drawBoom: function (ctx, s, p, fx, scale) {
       const R = (fx.big ? 18 : 10) * Math.min(scale, 1.6);
       ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
-      const flash = Math.max(0, 1 - p * 3);
+      const flash = Math.max(0, 1 - p * 2.5);
       if (flash > 0) {
-        const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, R * (0.6 + p * 3));
-        g.addColorStop(0, 'rgba(255, 240, 200,' + flash * 0.9 + ')');
-        g.addColorStop(0.4, 'rgba(255, 170, 60,' + flash * 0.8 + ')');
-        g.addColorStop(1, 'rgba(255, 80, 20, 0)');
+        // A fireball: hot core, orange body, dark-red edge.
+        const rad = R * (0.5 + p * 1.8);
+        const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, rad);
+        g.addColorStop(0, 'rgba(255, 236, 180,' + flash * 0.95 + ')');
+        g.addColorStop(0.35, 'rgba(255, 150, 50,' + flash * 0.85 + ')');
+        g.addColorStop(0.75, 'rgba(190, 50, 20,' + flash * 0.5 + ')');
+        g.addColorStop(1, 'rgba(120, 20, 10, 0)');
         ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.arc(s.x, s.y, R * (0.6 + p * 3), 0, TAU);
+        ctx.arc(s.x, s.y, rad, 0, TAU);
         ctx.fill();
       }
+      ctx.globalCompositeOperation = 'lighter';
       ctx.strokeStyle = 'rgba(255, 200, 120,' + (1 - p) + ')';
       ctx.lineWidth = 1.2;
       for (let i = 0; i < fx.parts.length; i++) {

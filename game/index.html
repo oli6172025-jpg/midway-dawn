@@ -69,30 +69,24 @@
 
 <section id="debrief" class="screen hidden" aria-live="polite"></section>
 
+<!-- Every script only defines its part of MD; they call one another once the page has loaded (main.js,
+     on DOMContentLoaded), so the order below is free: the game first, then the engine, sound, panels and chart. -->
+<script src="src/app/main.js"></script>
+<script src="src/app/session.js"></script>
 <script src="src/engine/rng.js"></script>
 <script src="src/engine/geometry.js"></script>
 <script src="src/engine/data.js"></script>
 <script src="src/engine/events.js"></script>
+<script src="src/engine/sim.js"></script>
+<script src="src/engine/deck.js"></script>
+<script src="src/engine/scouting.js"></script>
+<script src="src/engine/combat.js"></script>
+<script src="src/engine/us-ai.js"></script>
+<script src="src/engine/air.js"></script>
+<script src="src/engine/damage.js"></script>
 <script src="src/engine/weather.js"></script>
 <script src="src/engine/forces.js"></script>
-<script src="src/engine/deck.js"></script>
-<script src="src/engine/air.js"></script>
-<script src="src/engine/combat.js"></script>
-<script src="src/engine/damage.js"></script>
-<script src="src/engine/scouting.js"></script>
-<script src="src/engine/us-ai.js"></script>
 <script src="src/engine/autopilot.js"></script>
-<script src="src/engine/sim.js"></script>
-<script src="src/view/palette.js"></script>
-<script src="src/view/camera.js"></script>
-<script src="src/view/sea.js"></script>
-<script src="src/view/clouds.js"></script>
-<script src="src/view/ships.js"></script>
-<script src="src/view/aircraft.js"></script>
-<script src="src/view/effects.js"></script>
-<script src="src/view/markers.js"></script>
-<script src="src/view/title-scene.js"></script>
-<script src="src/view/renderer.js"></script>
 <script src="src/audio/sound.js"></script>
 <script src="src/ui/hud.js"></script>
 <script src="src/ui/carrier-cards.js"></script>
@@ -100,8 +94,16 @@
 <script src="src/ui/tutorial.js"></script>
 <script src="src/ui/debrief.js"></script>
 <script src="src/ui/input.js"></script>
-<script src="src/app/session.js"></script>
+<script src="src/view/palette.js"></script>
+<script src="src/view/camera.js"></script>
+<script src="src/view/renderer.js"></script>
+<script src="src/view/sea.js"></script>
+<script src="src/view/clouds.js"></script>
+<script src="src/view/ships.js"></script>
+<script src="src/view/aircraft.js"></script>
+<script src="src/view/effects.js"></script>
+<script src="src/view/markers.js"></script>
+<script src="src/view/title-scene.js"></script>
 <script src="src/app/showcase.js"></script>
-<script src="src/app/main.js"></script>
 </body>
 </html>

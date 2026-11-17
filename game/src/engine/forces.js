@@ -12,7 +12,10 @@
       state.groups = {};
       for (let i = 0; i < D.groups.length; i++) {
         const g = D.groups[i];
-        const p = MD.Geo.polar(g.bearing, g.range);
+        // The Americans are never quite where the history books put them: each battle shifts them a little.
+        const jitterB = g.side === 'A' ? MD.Rng.range(state, 'start-brg', -9, 9) : 0;
+        const jitterR = g.side === 'A' ? MD.Rng.range(state, 'start-rng', -25, 25) + (g.id === 'TF17' ? MD.Rng.range(state, 'tf17-gap', -8, 12) : 0) : 0;
+        const p = MD.Geo.polar(g.bearing + jitterB, g.range + jitterR);
         state.groups[g.id] = {
           id: g.id,
           side: g.side,

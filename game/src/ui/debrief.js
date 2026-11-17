@@ -28,7 +28,8 @@
       const e = state.log[i];
       if (e.kind === 'report' && e.urgent && !sawCarrier) {
         sawCarrier = true;
-        out.push([e.t, 'Enemy carriers sighted by ' + e.text.split(' ')[0] + ' ' + (e.text.split(' ')[1] || '')]);
+        const rep = state.intel.J.filter(function (r) { return r.id === e.report; })[0];
+        out.push([e.t, 'Enemy carriers sighted by ' + (rep ? rep.source : 'a search plane')]);
       } else if (e.kind === 'damage' && e.level === 'fatal') {
         out.push([e.t, e.text.split(' is ablaze')[0] + ' set ablaze']);
       } else if (e.kind === 'raid') {

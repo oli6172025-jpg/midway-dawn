@@ -90,8 +90,8 @@
         const gp = lerp(view, 'g:' + id, g);
         const gs = cam.toScreen(gp);
         const sailing = carriers.some(function (c) { return !c.detached; });
-        if (visible && sailing) {
-          // The screen of escorts in a ring around the carriers.
+        if (visible && (sailing || g.side === 'A')) {
+          // The screen of escorts in a ring around the carriers (standing by the burning ones too).
           const n = Math.min(10, g.escorts);
           for (let i = 0; i < n; i++) {
             const o = MD.Ships.escortOffset(i, n, g.course, 4.6 * sp);
@@ -108,9 +108,16 @@
             const seen = g.side === 'J' || view.reveal || view.hulks[c.id];
             if (!seen && !visible) continue;
             if (visible) view.hulks[c.id] = true;
-            const p = cam.toScreen(lerp(view, 'c:' + c.id, c));
-            x = p.x;
-            y = p.y;
+            const cp = lerp(view, 'c:' + c.id, c);
+            if (MD.Geo.dist(cp, gp) < 12) {
+              // Still among its escorts: drawn in the formation's spread-out scale, like the ships around it.
+              x = gs.x + (cp.x - gp.x) * sp;
+              y = gs.y - (cp.y - gp.y) * sp;
+            } else {
+              const p = cam.toScreen(cp);
+              x = p.x;
+              y = p.y;
+            }
           } else {
             if (!visible) continue;
             const a = (g.course * Math.PI) / 180;
@@ -137,7 +144,7 @@
         if (visible && sailing) {
           const title = g.side === 'J' ? 'KIDO BUTAI 機動部隊' : g.name.toUpperCase();
           const sub = Math.round(g.course) + '° · ' + Math.round(g.speed) + ' kt';
-          MD.Markers.groupLabel(ctx, gs.x + 5.5 * sp, gs.y - 3.5 * sp, title, sub, g.side === 'J' ? MD.Palette.jp : MD.Palette.us);
+          MD.Markers.groupLabel(ctx, gs.x + 5.5 * sp, gs.y - 6 * sp - 6, title, sub, g.side === 'J' ? MD.Palette.jp : MD.Palette.us);
         }
       }
     },
