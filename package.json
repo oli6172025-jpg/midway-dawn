@@ -1,0 +1,12 @@
+{
+  "name": "midway-dawn",
+  "private": true,
+  "type": "module",
+  "description": "MIDWAY: DAWN - a real-time carrier battle in the fog of the Pacific, for make.fun best-game-01",
+  "license": "MIT",
+  "scripts": {
+    "handin": "node main.ts",
+    "shots": "node scripts/shots.mjs",
+    "sim": "node scripts/simulate.mjs"
+  }
+}
