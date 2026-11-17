@@ -90,6 +90,12 @@
       ctx.font = '10px Consolas, monospace';
       ctx.textAlign = 'center';
       const w = ctx.measureText(text).width + 8;
+      const left = MD.Markers.labelX(x - w / 2, w);
+      if (left === null) {
+        ctx.restore();
+        return;
+      }
+      x = left + w / 2;
       ctx.fillStyle = 'rgba(5, 16, 24, 0.7)';
       ctx.fillRect(x - w / 2, y - 9, w, 13);
       ctx.fillStyle = color;

@@ -115,7 +115,7 @@
         ctx.moveTo(x, 0);
         ctx.lineTo(x, cam.h);
         ctx.stroke();
-        ctx.fillText(lonLabel(lon), x + 3, cam.h - 8);
+        if (MD.Markers.inSafe(x + 3) && MD.Markers.inSafe(x + 40)) ctx.fillText(lonLabel(lon), x + 3, cam.h - 8);
       }
       ctx.restore();
     },
@@ -134,7 +134,7 @@
         ctx.arc(o.x, o.y, r * cam.zoom, 0, Math.PI * 2);
         ctx.stroke();
         const p = cam.toScreen(MD.Geo.polar(315, r));
-        ctx.fillText(r + ' nm', p.x + 3, p.y - 3);
+        if (MD.Markers.inSafe(p.x + 3) && MD.Markers.inSafe(p.x + 45)) ctx.fillText(r + ' nm', p.x + 3, p.y - 3);
       }
       ctx.restore();
     },

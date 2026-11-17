@@ -7,7 +7,7 @@
 
   /** How big ships are drawn at this zoom. */
   function shipScale(cam) {
-    return Math.max(0.8, Math.min(3.1, cam.zoom / 1.25));
+    return Math.max(0.8, Math.min(4, cam.zoom / 1.25));
   }
 
   /** Screen pixels per nm between ships in a formation (spread out so they never overlap). */

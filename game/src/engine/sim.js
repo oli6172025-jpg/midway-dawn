@@ -153,8 +153,9 @@
       const ruined = state.midway.hp <= 0;
       const jPlanes = Math.floor(state.losses.J.planes / S.planesPerPoint);
       const aPlanes = Math.floor(state.losses.A.planes / S.planesPerPoint);
-      const J = usCarriers.lost * S.carrierLost + usCarriers.damaged * S.carrierDamaged + (ruined ? S.midwayRuined : 0) - jPlanes;
-      const A = ourCarriers.lost * S.carrierLost + ourCarriers.damaged * S.carrierDamaged - aPlanes;
+      // Aircraft losses take points away but never below zero.
+      const J = Math.max(0, usCarriers.lost * S.carrierLost + usCarriers.damaged * S.carrierDamaged + (ruined ? S.midwayRuined : 0) - jPlanes);
+      const A = Math.max(0, ourCarriers.lost * S.carrierLost + ourCarriers.damaged * S.carrierDamaged - aPlanes);
       return {
         J: J,
         A: A,

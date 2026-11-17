@@ -1,6 +1,6 @@
 // Screenshot scenes, opened with ?shot=1..4&seed=N. Each plays a real battle forward with the autopilot in command
 // (the same engine and the same seed always give the same frame), stops at the chosen moment and freezes the clock:
-//   1 the title screen, 2 a strike under way, 3 the moment the bombs hit, 4 the battle report.
+//   1 the title screen, 2 a strike under way, 3 the moment the bombs hit (the cover), 4 the battle report.
 (function (MD) {
   'use strict';
 
@@ -44,7 +44,8 @@
       if (e.kind !== 'bombing' || e.attacker !== 'J') continue;
       let fatal = 0;
       for (const id in e.tally) if (e.tally[id].before !== 'fatal' && s.carriers[id].status === 'fatal') fatal++;
-      if (fatal >= 1 && Object.keys(e.tally).length >= 2) return true;
+      const ours = MD.Forces.sideCarriers(s, 'J').filter(MD.Forces.fighting).length;
+      if (fatal >= 1 && Object.keys(e.tally).length >= 2 && ours >= 3) return true;
     }
     return false;
   }
@@ -161,16 +162,18 @@
         else if (e.kind === 'bombing') MD.Effects.fromEvent(e, s, now - 2.6);
         else if (e.kind === 'damage') MD.Effects.fromEvent(e, s, now - 3.4);
       }
-      // A second wave of bursts still landing, so the frame shows the attack at its height.
+      // A second wave of bursts still landing beside the hulls, so the frame shows the attack at its height.
       for (const id in hit.tally) {
         const c = s.carriers[id];
-        MD.Effects.explosion({ x: c.x + 0.25, y: c.y - 0.2 }, now - 0.45, false);
-        MD.Effects.explosion({ x: c.x - 0.2, y: c.y + 0.15 }, now - 0.7, false);
+        MD.Effects.explosion(c, now - 0.6, false, id);
+        MD.Effects.explosion(c, now - 0.9, false, id);
       }
-      for (let i = 0; i < 4; i++) MD.Effects.splash({ x: g.x + Math.sin(i * 1.7) * 3, y: g.y + Math.cos(i * 2.3) * 3 }, now - 0.3 - i * 0.2);
+      const ids = Object.keys(hit.tally);
+      for (let i = 0; i < 4; i++) MD.Effects.splash(s.carriers[ids[i % ids.length]], now - 0.3 - i * 0.2, ids[i % ids.length]);
       const burning = Object.keys(hit.tally).map(function (id) { return s.carriers[id]; }).filter(function (c) { return c.status === 'fatal'; })[0];
       const focus = burning || g;
-      app.camera.jump({ x: focus.x + 4, y: focus.y - 1.5 }, 3.8);
+      void focus;
+      app.camera.jump({ x: g.x + 3, y: g.y - 0.5 }, 5);
       MD.Cards.update();
     },
 

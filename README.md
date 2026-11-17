@@ -9,7 +9,7 @@ An entry for make.fun's **[Make the best game](https://make.fun/c/best-game-01)*
 **4 June 1942, dawn. You command Kido Butai — four carriers somewhere north-west of Midway. Find the American
 carriers in the fog before they find you, and strike first.**
 
-![Title](screenshots/01-title.jpg)
+![The bombs fall on Task Force 16](screenshots/01-battle.jpg)
 
 MIDWAY: DAWN is a real-time, pausable carrier battle that plays in one sitting (10–15 minutes). Its heart is the
 flight deck: every strike has to be brought up and ranged on deck (35–55 minutes), launched (10), recovered (45)
@@ -17,9 +17,9 @@ and rearmed (75) — and a bomb that lands while fuelled, armed aircraft crowd t
 fatal. Meanwhile the enemy is only ever where your search planes *said* he was: their telegrams arrive late, put
 him 5–35 miles off, and sometimes call carriers "cruisers".
 
-| Strike under way | The bombs fall | Battle report |
+| Title | Strike under way | Battle report |
 |---|---|---|
-| ![Strike](screenshots/02-strike.jpg) | ![Impact](screenshots/03-impact.jpg) | ![Debrief](screenshots/04-debrief.jpg) |
+| ![Title](screenshots/02-title.jpg) | ![Strike](screenshots/03-strike.jpg) | ![Debrief](screenshots/04-debrief.jpg) |
 
 ## Play
 
@@ -29,7 +29,7 @@ Open `game/index.html` in desktop Chrome — it is plain static files with no bu
 **Goal:** put all three American carriers out of action, or lead on points at sunset (18:30).
 **You lose** if all four of your carriers are lost, or trail on points at sunset.
 **Points:** 12 per enemy carrier put out of action, 4 per carrier damaged, 6 for Midway's airfield in ruins,
-−1 per 10 of your aircraft lost. The Americans score the same way against you.
+−1 per 10 of your aircraft lost (never below zero). The Americans score the same way against you.
 
 | Do this | How |
 |---|---|

@@ -29,14 +29,18 @@
       return list.length;
     },
 
-    explosion: function (p, now, big) {
+    /** A burst at a sea point, or on a ship (`carrier`: drawn where that ship is drawn, `dx, dy` pixels off it). */
+    explosion: function (p, now, big, carrier) {
       const parts = [];
       for (let i = 0; i < 10; i++) parts.push({ a: rnd() * TAU, v: 0.6 + rnd() * 0.8 });
-      return add({ type: 'boom', x: p.x, y: p.y, t0: now, dur: big ? 2.6 : 1.6, big: !!big, parts: parts });
+      return add({ type: 'boom', x: p.x, y: p.y, t0: now, dur: big ? 2.6 : 1.6, big: !!big, parts: parts, carrier: carrier || null, dx: (rnd() - 0.5) * 34, dy: (rnd() - 0.5) * 22 });
     },
 
-    splash: function (p, now) {
-      return add({ type: 'splash', x: p.x, y: p.y, t0: now, dur: 1.8 });
+    /** A near miss: at a sea point, or beside a ship (`carrier`), a few dozen pixels off her hull. */
+    splash: function (p, now, carrier) {
+      const a = rnd() * TAU;
+      const r = 26 + rnd() * 30;
+      return add({ type: 'splash', x: p.x, y: p.y, t0: now, dur: 1.8, carrier: carrier || null, dx: Math.cos(a) * r, dy: Math.sin(a) * r * 0.7 });
     },
 
     dogfight: function (p, now, intensity, falling) {
@@ -66,14 +70,18 @@
           const n = e.tally[id].bombs + e.tally[id].torps;
           hits += n;
           for (let i = 0; i < Math.min(n, 8); i++) {
-            Effects.explosion(jitter(c, 0.8), now + 1.2 + k * 0.4, false);
+            Effects.explosion(jitter(c, 0.8), now + 1.2 + k * 0.4, false, id);
             k++;
           }
         }
         const misses = Math.min(12, Math.max(3, Math.round((e.sent || 20) / 6) - hits));
-        for (let i = 0; i < misses; i++) Effects.splash(jitter({ x: e.x, y: e.y }, 4), now + 0.8 + rnd() * 2.6);
+        const targets = Object.keys(e.tally);
+        for (let i = 0; i < misses; i++) {
+          const id = targets.length ? targets[i % targets.length] : null;
+          Effects.splash(id ? state.carriers[id] : jitter({ x: e.x, y: e.y }, 4), now + 0.8 + rnd() * 2.6, id);
+        }
       } else if (e.kind === 'damage' && e.level === 'fatal') {
-        Effects.explosion({ x: e.x, y: e.y }, now + 2.2, true);
+        Effects.explosion({ x: e.x, y: e.y }, now + 2.2, true, e.carrier);
       } else if (e.kind === 'midway') {
         const n = Math.min(12, Math.round(e.damage / 2) + 3);
         for (let i = 0; i < n; i++) Effects.explosion(jitter({ x: 0, y: 0 }, 2.5), now + 1 + i * 0.3, i % 4 === 0);
@@ -87,13 +95,14 @@
       list = list.filter(function (fx) { return now - fx.t0 < fx.dur; });
     },
 
-    draw: function (ctx, cam, now) {
+    draw: function (ctx, cam, now, shipAt) {
       const scale = MD.Ships.shipScale(cam);
       for (let i = 0; i < list.length; i++) {
         const fx = list[i];
         const p = (now - fx.t0) / fx.dur;
         if (p < 0 || p > 1) continue;
-        const s = cam.toScreen(fx);
+        let s = cam.toScreen(fx);
+        if (fx.carrier && shipAt && shipAt[fx.carrier]) s = { x: shipAt[fx.carrier].x + fx.dx, y: shipAt[fx.carrier].y + fx.dy };
         if (fx.type === 'boom') Effects.drawBoom(ctx, s, p, fx, scale);
         else if (fx.type === 'splash') Effects.drawSplash(ctx, s, p, scale);
         else if (fx.type === 'tracers') Effects.drawTracers(ctx, s, p, fx, now);
@@ -142,10 +151,10 @@
 
     drawSplash: function (ctx, s, p, scale) {
       ctx.save();
-      ctx.strokeStyle = 'rgba(235, 248, 255,' + (0.9 * (1 - p)) + ')';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(235, 248, 255,' + (0.75 * (1 - p)) + ')';
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
-      ctx.arc(s.x, s.y, (3 + p * 12) * scale, 0, TAU);
+      ctx.arc(s.x, s.y, (2 + p * 7) * Math.min(scale, 2), 0, TAU);
       ctx.stroke();
       ctx.fillStyle = 'rgba(255, 255, 255,' + (0.8 * (1 - p)) + ')';
       ctx.beginPath();
@@ -216,14 +225,14 @@
      * A burning ship: flicker on the deck, an orange glow on the water, a smoke plume streaming downwind.
      * Stateless (a function of time), so it is the same frame after frame in a screenshot.
      */
-    fire: function (ctx, cam, x, y, intensity, now, seed, windFrom) {
+    fire: function (ctx, cam, x, y, intensity, now, seed, windFrom, layer, heading) {
       const scale = MD.Ships.shipScale(cam);
       const downwind = ((windFrom + 180) * Math.PI) / 180;
       const wx = Math.sin(downwind);
       const wy = -Math.cos(downwind);
       const plume = 70 * scale * (0.6 + intensity);
       ctx.save();
-      const n = Math.round(12 + intensity * 14);
+      const n = layer === 'under' ? Math.round(12 + intensity * 14) : 0;
       for (let i = n - 1; i >= 0; i--) {
         const ph = (now * 0.18 + i / n + seed * 0.37) % 1;
         const wob = Math.sin(ph * 7 + i * 1.7 + seed) * 6 * ph * scale;
@@ -236,8 +245,24 @@
         ctx.arc(px, py, r, 0, TAU);
         ctx.fill();
       }
+      if (layer === 'under') {
+        // The glow on the water beneath the hull, kept small so the ship's shape still reads.
+        ctx.globalCompositeOperation = 'lighter';
+        const glowR = (9 + 7 * intensity) * scale * (0.9 + 0.1 * Math.sin(now * 9 + seed));
+        const g = ctx.createRadialGradient(x, y, 0, x, y, glowR);
+        g.addColorStop(0, 'rgba(255, 170, 80,' + (0.35 * intensity + 0.15) + ')');
+        g.addColorStop(1, 'rgba(200, 40, 10, 0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(x, y, glowR, 0, TAU);
+        ctx.fill();
+        ctx.restore();
+        return;
+      }
+      ctx.restore();
+      ctx.save();
       ctx.globalCompositeOperation = 'lighter';
-      const glowR = (14 + 14 * intensity) * scale * (0.9 + 0.1 * Math.sin(now * 9 + seed));
+      const glowR = (5 + 4 * intensity) * scale;
       const g = ctx.createRadialGradient(x, y, 0, x, y, glowR);
       g.addColorStop(0, 'rgba(255, 190, 90,' + (0.55 * intensity + 0.2) + ')');
       g.addColorStop(0.5, 'rgba(230, 90, 30,' + (0.3 * intensity + 0.1) + ')');
@@ -247,10 +272,13 @@
       ctx.arc(x, y, glowR, 0, TAU);
       ctx.fill();
       for (let i = 0; i < 5; i++) {
+        // Flames licking along the flight deck, along the ship's length.
         const f = Math.sin(now * 11 + i * 2.3 + seed) * 0.5 + 0.5;
         ctx.fillStyle = 'rgba(255, ' + (150 + f * 80) + ', 60, ' + (0.5 + 0.5 * f) * intensity + ')';
         ctx.beginPath();
-        ctx.arc(x + (i - 2) * 2.2 * scale, y + Math.sin(i * 1.3) * 3 * scale, (1.5 + f * 2.5) * scale, 0, TAU);
+        const along = (i - 2) * 4 * scale;
+        const hr = ((heading || 0) * Math.PI) / 180;
+        ctx.arc(x + Math.sin(hr) * along + Math.sin(i * 1.3) * 1.5 * scale, y - Math.cos(hr) * along, (1.2 + f * 1.8) * scale, 0, TAU);
         ctx.fill();
       }
       ctx.restore();

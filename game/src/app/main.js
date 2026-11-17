@@ -112,9 +112,6 @@
       $('tutorial').classList.add('hidden');
       App.session.view.reveal = true;
       App.resize();
-      // The report stands on the right; the revealed chart fills the space to its left.
-      App.camera.insetRight = Math.min(720, App.camera.w * 0.56);
-      App.camera.insetTop = 40;
       App.fitAll();
       const best = App.fixedNow === null && MD.Records.add(App.session.state);
       MD.Debrief.show(App, best);

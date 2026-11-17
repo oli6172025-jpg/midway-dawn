@@ -166,7 +166,11 @@ button { font-family: inherit; cursor: pointer; }
   text-shadow: 0 2px 0 rgba(80, 30, 10, 0.5), 0 0 40px rgba(255, 170, 90, 0.35), 0 6px 24px rgba(0, 0, 0, 0.55);
 }
 #title h1 span { color: var(--jp); text-shadow: 0 0 30px rgba(200, 64, 47, 0.5), 0 4px 18px rgba(0, 0, 0, 0.5); }
-.title-kanji { font-family: var(--kanji); font-size: 20px; letter-spacing: 0.6em; color: var(--gold); text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6); margin: 2px 0 6px; }
+.title-kanji {
+  font-family: 'Yu Mincho', 'YuMincho', 'Hiragino Mincho ProN', 'MS Mincho', serif; font-weight: 600; font-size: 22px; letter-spacing: 0.3em;
+  color: #f0d49a; margin: 4px 0 8px; padding: 2px 6px 2px 14px; background: rgba(20, 10, 20, 0.35); border-radius: 2px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
 .title-sub { font-size: 19px; font-style: italic; color: #f6e6c8; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7); margin-bottom: 18px; }
 .title-menu { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; background: rgba(5, 16, 24, 0.72); border: 1px solid var(--gold-dim); padding: 14px 22px 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
 .diff { display: flex; gap: 6px; }
@@ -185,45 +189,54 @@ button { font-family: inherit; cursor: pointer; }
 .title-keys { font-size: 11px; color: var(--paper-dim); font-family: var(--mono); }
 
 /* ---------------------------------------------------------------- debrief */
-#debrief { display: flex; align-items: center; justify-content: flex-end; padding-right: 3vw; background: linear-gradient(90deg, rgba(5, 16, 24, 0) 30%, rgba(5, 16, 24, 0.55)); }
-.debrief-map-title { position: fixed; left: 24px; top: 18px; font-size: 13px; letter-spacing: 0.3em; color: var(--paper); text-shadow: 0 1px 6px #000; }
+/* Built to read even as a small thumbnail: the verdict, the score and FIGHT AGAIN are large and centred. */
+#debrief { display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at center, rgba(5, 16, 24, 0.35), rgba(5, 16, 24, 0.78)); }
+.debrief-map-title { position: fixed; left: 24px; top: 16px; font-size: 13px; letter-spacing: 0.3em; color: var(--paper); text-shadow: 0 1px 6px #000; }
 .debrief-map-title b { color: #ff8a73; font-weight: normal; }
 .debrief-map-title i { color: #9cc7f0; font-style: normal; }
 .report {
-  position: relative; width: 640px; max-width: 94vw; background: var(--paper); color: var(--ink); padding: 22px 30px 18px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  position: relative; width: 860px; max-width: 96vw; max-height: 96vh; overflow: hidden; background: var(--paper); color: var(--ink); padding: 16px 34px 14px; text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6); border: 1px solid #8a7a55;
   background-image: radial-gradient(ellipse at 20% 10%, rgba(255, 255, 255, 0.35), transparent 60%), repeating-linear-gradient(0deg, transparent 0 22px, rgba(80, 60, 30, 0.07) 22px 23px);
-  border: 1px solid #8a7a55;
 }
-.report h2 { margin: 0; font-size: 13px; letter-spacing: 0.35em; color: #6a5a3a; font-weight: normal; }
-.report h3 { margin: 2px 0 2px; font-size: 40px; letter-spacing: 0.1em; }
-.report .reason { font-style: italic; color: #5a4a2a; margin-bottom: 12px; font-size: 15px; }
+.report h2 { margin: 0; font-size: 12px; letter-spacing: 0.35em; color: #6a5a3a; font-weight: normal; }
+.report h3 { margin: 0; font-size: 92px; line-height: 1; letter-spacing: 0.12em; font-weight: bold; }
+.report.victory h3 { color: #a3281a; }
+.report.defeat h3 { color: #2b4d6e; }
+.report.draw h3 { color: #5a4a2a; }
+.report .reason { font-style: italic; color: #5a4a2a; margin: 2px 0 4px; font-size: 14px; }
 .report .verdict-stamp {
-  position: absolute; right: 30px; top: 22px; border: 4px solid currentColor; padding: 4px 14px; font-size: 30px; font-weight: bold; letter-spacing: 0.15em;
+  position: absolute; right: 26px; top: 18px; border: 4px solid currentColor; padding: 4px 12px; font-size: 30px; font-weight: bold; letter-spacing: 0.15em;
   transform: rotate(-9deg); font-family: var(--kanji), var(--serif); opacity: 0.88; text-align: center; line-height: 1.05;
 }
 .report .verdict-stamp small { display: block; font-size: 12px; letter-spacing: 0.3em; font-family: var(--serif); }
 .report.victory .verdict-stamp { color: var(--jp); }
 .report.defeat .verdict-stamp { color: #2b4d6e; }
 .report.draw .verdict-stamp { color: #6a5a3a; }
-.sides { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-.side h4 { margin: 0 0 4px; font-size: 13px; letter-spacing: 0.2em; border-bottom: 2px solid currentColor; padding-bottom: 2px; }
+.points { display: flex; align-items: center; justify-content: center; gap: 26px; font-family: var(--mono); font-size: 72px; font-weight: bold; line-height: 1; }
+.points .pj { color: #a3281a; }
+.points .pa { color: #2b4d6e; }
+.points .dash { font-size: 40px; color: #6a5a3a; }
+.points small { display: block; font-size: 12px; letter-spacing: 0.25em; color: #6a5a3a; font-family: var(--serif); font-weight: normal; text-align: center; margin-top: 2px; }
+.breakdown { font-family: var(--mono); font-size: 12px; color: #5a4a2a; margin-top: 4px; }
+.report .btns { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+.report .btns button { background: var(--ink); color: var(--paper); border: 1px solid var(--ink); padding: 6px 18px; font-size: 13px; letter-spacing: 0.15em; }
+.report .btns button.primary {
+  background: linear-gradient(180deg, #d4513d, #a8321f); border-color: #8a2a1a; color: #fff6e8; font-size: 30px; font-weight: bold; padding: 12px 56px; letter-spacing: 0.2em;
+  box-shadow: 0 6px 18px rgba(160, 40, 20, 0.45);
+}
+.report .btns.small { margin-top: 8px; }
+.report .btns button:hover { filter: brightness(1.15); }
+.sides { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 12px; text-align: left; }
+.side h4 { margin: 0 0 3px; font-size: 12px; letter-spacing: 0.2em; border-bottom: 2px solid currentColor; padding-bottom: 2px; }
 .side.jp h4 { color: #9a2e20; }
 .side.us h4 { color: #2b4d6e; }
-.side table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; }
-.side td { padding: 2px 3px; border-bottom: 1px dotted rgba(80, 60, 30, 0.3); }
+.side table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 11px; }
+.side td { padding: 1px 3px; border-bottom: 1px dotted rgba(80, 60, 30, 0.3); }
 .side td:last-child { text-align: right; }
 .fate { font-weight: bold; }
 .fate.lost { color: #a3281a; }
 .fate.damaged { color: #a8681a; }
 .fate.ok { color: #2f6b3c; }
-.points { margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 22px; font-family: var(--mono); font-size: 34px; font-weight: bold; }
-.points .pj { color: #a3281a; }
-.points .pa { color: #2b4d6e; }
-.points small { display: block; font-size: 10px; letter-spacing: 0.2em; color: #6a5a3a; font-family: var(--serif); font-weight: normal; text-align: center; }
-.breakdown { font-family: var(--mono); font-size: 11px; color: #5a4a2a; text-align: center; margin-top: 2px; }
-.report .btns { display: flex; justify-content: center; gap: 10px; margin-top: 14px; }
-.report .btns button { background: var(--ink); color: var(--paper); border: 1px solid var(--ink); padding: 8px 20px; font-size: 14px; letter-spacing: 0.15em; }
-.report .btns button.primary { background: var(--jp); border-color: #8a2a1a; }
-.report .btns button:hover { filter: brightness(1.15); }
-.report .moments { margin-top: 10px; font-size: 12px; font-family: var(--mono); color: #4a3a1a; columns: 2; column-gap: 18px; }
-.report .moments div { break-inside: avoid; margin-bottom: 2px; }
+.report .moments { margin-top: 8px; font-size: 11px; font-family: var(--mono); color: #4a3a1a; columns: 2; column-gap: 18px; text-align: left; }
+.report .moments div { break-inside: avoid; margin-bottom: 1px; }

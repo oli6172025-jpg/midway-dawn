@@ -172,8 +172,9 @@
       for (let i = 0; i < 9; i++) {
         const row = Math.floor((i + 1) / 2);
         const side = i === 0 ? 0 : i % 2 ? -1 : 1;
-        const bx = w * 0.42 + ((clock * 9) % (w * 0.6));
-        planeSil(ctx, bx - row * 26, h * 0.3 - row * 6 + side * row * 9 + Math.sin(clock + i) * 1.5, 7);
+        // Low over the eastern horizon, clear of the title lettering.
+        const bx = w * 0.56 + ((clock * 9) % (w * 0.36));
+        planeSil(ctx, bx - row * 26, h * 0.47 - row * 5 + side * row * 9 + Math.sin(clock + i) * 1.5, 7);
       }
       // Film grain and vignette for the painted look.
       const v = ctx.createRadialGradient(w * 0.5, h * 0.55, h * 0.3, w * 0.5, h * 0.55, w * 0.75);

@@ -20,7 +20,29 @@
     return (n < 10 ? '00' : n < 100 ? '0' : '') + n;
   }
 
+  /** The part of the screen not under the side panels: labels are kept inside it. */
+  let safe = { x0: 0, x1: 99999 };
+
   const Markers = {
+    setSafeArea: function (cam) {
+      safe = { x0: cam.insetLeft + 6, x1: cam.w - cam.insetRight - 6 };
+    },
+
+    /** A label's left edge moved so that all of its width stays on the visible chart. */
+    clampX: function (x, width) {
+      return Math.max(safe.x0, Math.min(safe.x1 - width, x));
+    },
+
+    inSafe: function (x) {
+      return x >= safe.x0 && x <= safe.x1;
+    },
+
+    /** Where a label anchored at x may start, or null when its anchor is off the visible chart (then it is not drawn). */
+    labelX: function (x, width) {
+      if (x < safe.x0 - 4 || x > safe.x1) return null;
+      return Markers.clampX(x, width);
+    },
+
     /** How sure a report still is: its ring grows by the ships' possible run since it was made. */
     reportRadius: function (r, minute) {
       return r.err + (Math.max(0, minute - r.obsT) * Math.max(12, r.speed)) / 60;
@@ -66,7 +88,8 @@
         ctx.font = (hot ? 'bold ' : '') + '10px Consolas, monospace';
         ctx.fillStyle = 'rgba(' + color + ', 1)';
         const label = MD.Geo.clock(r.obsT).replace(':', '') + (hot ? ' CV×' + r.carriers : r.kind === 'ships' ? ' CA/DD' : r.kind === 'wrecks' ? ' burning' : ' ?');
-        ctx.fillText(label, s.x + 9, s.y - 6);
+        const lx = Markers.labelX(s.x + 9, ctx.measureText(label).width);
+        if (lx !== null) ctx.fillText(label, lx, s.y - 6);
         ctx.restore();
       }
     },
@@ -185,6 +208,11 @@
       ctx.save();
       ctx.font = 'bold 11px Georgia, serif';
       const w = Math.max(ctx.measureText(title).width, sub ? ctx.measureText(sub).width * 0.9 : 0) + 12;
+      x = Markers.labelX(x, w);
+      if (x === null) {
+        ctx.restore();
+        return;
+      }
       ctx.fillStyle = 'rgba(5, 16, 24, 0.72)';
       ctx.fillRect(x, y - 11, w, sub ? 26 : 15);
       ctx.fillStyle = color;

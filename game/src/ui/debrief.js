@@ -64,12 +64,13 @@
         '<div class="verdict-stamp">' + stamp + '<small>' + title + '</small></div>' +
         '<h3>' + title + '</h3>' +
         '<div class="reason">' + state.endReason + ' ' + MD.Data.difficulty[state.difficulty].name + ' · seed ' + state.seed + ' · ' + MD.Geo.clock(state.t) + '</div>' +
+        '<div class="points"><div class="pj">' + sc.J + '<small>JAPAN</small></div><div class="dash">—</div><div class="pa">' + sc.A + '<small>USA</small></div></div>' +
+        '<div class="breakdown">' + (parts.join(' · ') || 'No enemy carrier hit') + (newBest ? ' · <b>NEW BEST MARGIN</b>' : '') + '</div>' +
+        '<div class="btns"><button class="primary" data-act="again">▶ FIGHT AGAIN</button></div>' +
+        '<div class="btns small"><button data-act="new">NEW BATTLE</button><button data-act="title">TITLE</button></div>' +
         '<div class="sides"><div class="side jp"><h4>KIDO BUTAI 機動部隊</h4>' + sideTable(state, 'J') + '</div>' +
         '<div class="side us"><h4>US PACIFIC FLEET</h4>' + sideTable(state, 'A') + '</div></div>' +
-        '<div class="points"><div class="pj">' + sc.J + '<small>JAPAN</small></div><div style="font-size:16px;color:#6a5a3a">—</div><div class="pa">' + sc.A + '<small>USA</small></div></div>' +
-        '<div class="breakdown">' + (parts.join(' · ') || 'No enemy carrier hit') + (newBest ? ' · <b>NEW BEST MARGIN</b>' : '') + '</div>' +
         '<div class="moments">' + moments(state) + '</div>' +
-        '<div class="btns"><button class="primary" data-act="again">FIGHT AGAIN</button><button data-act="new">NEW BATTLE</button><button data-act="title">TITLE</button></div>' +
         '</div>';
       el.classList.remove('hidden');
       el.onclick = function (e) {

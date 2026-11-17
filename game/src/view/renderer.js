@@ -38,6 +38,7 @@
     drawChart: function (ctx, cam, view, now) {
       const state = view.state;
       const minute = state.t + view.alpha;
+      MD.Markers.setSafeArea(cam);
       MD.Sea.drawWater(ctx, cam, minute, now);
       MD.Clouds.update(cam, state.fronts, state.t);
       MD.Clouds.drawShadow(ctx, cam);
@@ -49,7 +50,7 @@
       Renderer.drawGroups(ctx, cam, view, now);
       MD.Clouds.drawTops(ctx, cam);
       Renderer.drawFlights(ctx, cam, view, now);
-      MD.Effects.draw(ctx, cam, now);
+      MD.Effects.draw(ctx, cam, now, view.shipAt);
       Renderer.drawOrders(ctx, cam, view, now);
       MD.Sea.drawLight(ctx, cam, minute);
       MD.Sea.drawCompass(ctx, cam);
@@ -80,6 +81,7 @@
     },
 
     drawGroups: function (ctx, cam, view, now) {
+      view.shipAt = {};
       const state = view.state;
       const scale = MD.Ships.shipScale(cam);
       const sp = MD.Ships.spread(cam);
@@ -125,19 +127,22 @@
             y = gs.y - (-c.slot.x * Math.sin(a) + c.slot.y * Math.cos(a)) * sp;
           }
           const spotted = c.deck.pkg && (c.deck.state === 'spotted' || c.deck.state === 'spotting' || c.deck.state === 'launching') ? c.deck.pkg.D + c.deck.pkg.T + c.deck.pkg.F : 0;
+          view.shipAt[c.id] = { x: x, y: y };
+          const burning = c.status === 'fatal' || c.status === 'damaged';
+          const intensity = c.status === 'fatal' ? 1 : 0.35;
+          // Smoke and the glow on the water first, then the hull, then the flames on her deck.
+          if (burning) MD.Effects.fire(ctx, cam, x, y, intensity, now, i + 1, state.wind.from, 'under', c.heading);
           MD.Ships.carrier(ctx, x, y, c.heading, scale, {
             side: c.side, length: c.length, islandPort: c.islandPort, status: c.status, spotted: spotted, speed: c.detached ? 0 : g.speed,
             selected: view.ui.selected === c.id, clock: now, seed: i * 0.21,
           });
-          if (c.status === 'fatal' || c.status === 'damaged') {
-            const intensity = c.status === 'fatal' ? 1 : 0.35;
-            MD.Effects.fire(ctx, cam, x, y, intensity, now, i + 1, state.wind.from);
-          }
+          if (burning) MD.Effects.fire(ctx, cam, x, y, intensity, now, i + 1, state.wind.from, 'over', c.heading);
           if (cam.zoom > 2.4 || (c.side === 'A' && visible && !view.reveal)) {
             ctx.save();
             ctx.font = '9px Consolas, monospace';
             ctx.fillStyle = c.side === 'J' ? '#ffd6c8' : '#d6ebff';
-            ctx.fillText(c.name, x + 14 * scale, y + 3);
+            const nx = MD.Markers.labelX(x + 14 * scale, ctx.measureText(c.name).width);
+            if (nx !== null) ctx.fillText(c.name, nx, y + 3);
             ctx.restore();
           }
         }
@@ -170,7 +175,9 @@
             ctx.save();
             ctx.font = '9px Consolas, monospace';
             ctx.fillStyle = 'rgba(255, 200, 180, 0.85)';
-            ctx.fillText(f.name.replace(' No.', ' ') + (f.phase === 'shadow' ? ' ◉' : ''), p.x + 7, p.y - 5);
+            const tag = f.name.replace(' No.', ' ') + (f.phase === 'shadow' ? ' ◉' : '');
+            const tx = MD.Markers.labelX(p.x + 7, ctx.measureText(tag).width);
+            if (tx !== null) ctx.fillText(tag, tx, p.y - 5);
             ctx.restore();
           }
           continue;
