@@ -4,3 +4,5 @@ best-game-01-kit/
 out/
 transcripts*.tar.gz
 .env
+out2/
+out*/
