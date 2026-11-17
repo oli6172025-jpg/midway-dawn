@@ -47,9 +47,9 @@
       { id: 'kaga', side: 'J', group: 'KB', name: 'KAGA', kanji: '加賀', F: 18, D: 18, T: 27, S: 0, islandPort: false, slot: { x: -3, y: -2.5 }, length: 1.02, cap: 6 },
       { id: 'soryu', side: 'J', group: 'KB', name: 'SORYU', kanji: '蒼龍', F: 18, D: 16, T: 18, S: 2, islandPort: false, slot: { x: 3, y: -2.5 }, length: 0.86, cap: 6 },
       { id: 'hiryu', side: 'J', group: 'KB', name: 'HIRYU', kanji: '飛龍', F: 18, D: 18, T: 18, S: 0, islandPort: true, slot: { x: 3, y: 2.5 }, length: 0.88, cap: 6 },
-      { id: 'enterprise', side: 'A', group: 'TF16', name: 'ENTERPRISE', kanji: '', F: 27, D: 38, T: 14, S: 0, islandPort: false, slot: { x: -2.5, y: 0 }, length: 0.96, cap: 8, escort: 10, nav: 0.9 },
-      { id: 'hornet', side: 'A', group: 'TF16', name: 'HORNET', kanji: '', F: 27, D: 37, T: 15, S: 0, islandPort: false, slot: { x: 2.5, y: 0 }, length: 0.96, cap: 8, escort: 10, nav: 0.65 },
-      { id: 'yorktown', side: 'A', group: 'TF17', name: 'YORKTOWN', kanji: '', F: 25, D: 37, T: 13, S: 0, islandPort: false, slot: { x: 0, y: 0 }, length: 0.96, cap: 6, escort: 6, nav: 0.9, reserveD: 17 },
+      { id: 'enterprise', side: 'A', group: 'TF16', name: 'ENTERPRISE', kanji: '', F: 27, D: 38, T: 14, S: 0, islandPort: false, slot: { x: -2.5, y: 0 }, length: 0.96, cap: 12, escort: 8, nav: 0.9 },
+      { id: 'hornet', side: 'A', group: 'TF16', name: 'HORNET', kanji: '', F: 27, D: 37, T: 15, S: 0, islandPort: false, slot: { x: 2.5, y: 0 }, length: 0.96, cap: 12, escort: 8, nav: 0.65 },
+      { id: 'yorktown', side: 'A', group: 'TF17', name: 'YORKTOWN', kanji: '', F: 25, D: 37, T: 13, S: 0, islandPort: false, slot: { x: 0, y: 0 }, length: 0.96, cap: 10, escort: 6, nav: 0.9, reserveD: 17 },
     ],
 
     /** Midway's air station: fighters defend it, the rest attack Kido Butai once it is found. */
@@ -121,7 +121,8 @@
       killScale: 0.45,
       escortWeight: 0.8,
       aaJ: 0.06,
-      aaA: 0.08,
+      aaA: 0.12,
+      evadeA: 0.85, // American carriers' radical manoeuvres and heavy flak spoil aim
       strikeSight: 30,
       searchMinutes: 25,
       navJ: 0.95,
@@ -133,6 +134,7 @@
       baseA: 0.04,
       exposed: 0.55,
       perHit: 0.25,
+      perHitA: 0.15, // American damage control kept ships fighting through more hits
       landBombFactor: 0.6,
       deckOutMin: 60,
       deckOutMax: 150,
@@ -151,7 +153,7 @@
 
     /** The three settings on the title screen. */
     difficulty: {
-      novice: { name: 'Novice', kanji: '新手', usDelay: 30, usSearch: 0.5, usCommDelay: 1.3, hornetLost: 0.5, jSearch: 0.75 },
+      novice: { name: 'Novice', kanji: '新手', jCap: 1.3, usDelay: 30, usSearch: 0.5, usCommDelay: 1.3, hornetLost: 0.5, jSearch: 0.75 },
       historical: { name: 'Historical', kanji: '史実', usDelay: 0, usSearch: 0.6, usCommDelay: 1, hornetLost: 0.35, jSearch: 0.6 },
       admiral: { name: 'Admiral', kanji: '提督', usDelay: -20, usSearch: 0.8, usCommDelay: 0.6, hornetLost: 0.15, jSearch: 0.6 },
     },
