@@ -1,10 +1,10 @@
 # MIDWAY: DAWN
 
-[![best-game-01](https://make.fun/badge/best-game-01.svg)](https://make.fun/c/best-game-01)
-[![rank](https://make.fun/badge/best-game-01/oli6172025-jpg/midway-dawn/rank.svg)](https://make.fun/c/best-game-01)
-[![reward](https://make.fun/badge/best-game-01/oli6172025-jpg/midway-dawn/reward.svg)](https://make.fun/c/best-game-01)
+[![best-game-01](https://make.fun/badge/best-game-01.svg)](https://make.fun/bounty/best-game-01)
+[![rank](https://make.fun/badge/best-game-01/oli6172025-jpg/midway-dawn/rank.svg)](https://make.fun/bounty/best-game-01)
+[![reward](https://make.fun/badge/best-game-01/oli6172025-jpg/midway-dawn/reward.svg)](https://make.fun/bounty/best-game-01)
 
-An entry for make.fun's **[Make the best game](https://make.fun/c/best-game-01)** bounty (best-game-01).
+An entry for make.fun's **[Make the best game](https://make.fun/bounty/best-game-01)** bounty (best-game-01).
 
 **4 June 1942, dawn. You command Kido Butai — four carriers somewhere north-west of Midway. Find the American
 carriers in the fog before they find you, and strike first.**

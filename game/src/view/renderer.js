@@ -184,7 +184,7 @@
         }
         MD.Aircraft.track(ctx, cam, f, color, 0.85);
         const n = MD.Air.count(f);
-        MD.Aircraft.formation(ctx, p.x, p.y, f.heading, n, color, now + i, scale);
+        MD.Aircraft.formation(ctx, p.x, p.y, f.heading, n, color, now + i, Math.min(scale, 2.4));
         const status = f.phase === 'holding' ? ' · circling' : f.phase === 'search' ? ' · searching' : f.phase === 'return' ? ' · returning' : '';
         MD.Aircraft.label(ctx, p.x, p.y + 16 + Math.min(12, Math.ceil(n / 6)) * 2, (f.side === 'J' ? f.name : 'ENEMY RAID') + ' · ' + n + status, color);
       }

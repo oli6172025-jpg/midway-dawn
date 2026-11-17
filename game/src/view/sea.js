@@ -264,7 +264,8 @@
       ctx.fillStyle = MD.Palette.rgb(light.tint, Math.min(0.9, light.tint[3] * 2.2));
       ctx.fillRect(0, 0, cam.w, cam.h);
       ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = MD.Palette.rgb(light.tint, light.tint[3] * 0.6);
+      // A light veil only: the warmth comes from the soft-light pass, so the sea stays blue against the fires.
+      ctx.fillStyle = MD.Palette.rgb(light.tint, light.tint[3] * 0.25);
       ctx.fillRect(0, 0, cam.w, cam.h);
       const v = ctx.createRadialGradient(cam.w / 2, cam.h / 2, cam.h * 0.35, cam.w / 2, cam.h / 2, cam.w * 0.75);
       v.addColorStop(0, 'rgba(0,0,0,0)');

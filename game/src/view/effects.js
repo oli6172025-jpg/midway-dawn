@@ -43,25 +43,27 @@
       return add({ type: 'splash', x: p.x, y: p.y, t0: now, dur: 1.8, carrier: carrier || null, dx: Math.cos(a) * r, dy: Math.sin(a) * r * 0.7 });
     },
 
-    dogfight: function (p, now, intensity, falling) {
+    /** Tracers, flak and falling planes; `from` (a bearing) moves the fight out toward where the raid came from. */
+    dogfight: function (p, now, intensity, falling, from) {
+      const off = typeof from === 'number' ? { x: Math.sin((from * Math.PI) / 180) * 70, y: -Math.cos((from * Math.PI) / 180) * 70 } : { x: 0, y: 0 };
       const lines = [];
       const n = 10 + Math.min(30, intensity * 2);
       for (let i = 0; i < n; i++) {
         lines.push({ a: rnd() * TAU, r: 6 + rnd() * 34, len: 6 + rnd() * 10, start: rnd() * 0.8, spin: (rnd() - 0.5) * 3, warm: rnd() < 0.6 });
       }
-      add({ type: 'tracers', x: p.x, y: p.y, t0: now, dur: 4.5, lines: lines });
+      add({ type: 'tracers', x: p.x, y: p.y, t0: now, dur: 4.5, lines: lines, ox: off.x, oy: off.y });
       const puffs = [];
       for (let i = 0; i < 14; i++) puffs.push({ dx: (rnd() - 0.5) * 70, dy: (rnd() - 0.5) * 50, start: rnd() * 3, r: 2 + rnd() * 3 });
-      add({ type: 'flak', x: p.x, y: p.y, t0: now, dur: 5, puffs: puffs });
+      add({ type: 'flak', x: p.x, y: p.y, t0: now, dur: 5, puffs: puffs, ox: off.x * 0.5, oy: off.y * 0.5 });
       for (let i = 0; i < Math.min(8, falling); i++) {
-        add({ type: 'fall', x: p.x, y: p.y, t0: now + rnd() * 2.5, dur: 2.2, dx: (rnd() - 0.5) * 60, dy: (rnd() - 0.5) * 40, drift: (rnd() - 0.5) * 50, spin: rnd() * TAU });
+        add({ type: 'fall', x: p.x, y: p.y, ox: off.x, oy: off.y, t0: now + rnd() * 2.5, dur: 2.2, dx: (rnd() - 0.5) * 60, dy: (rnd() - 0.5) * 40, drift: (rnd() - 0.5) * 50, spin: rnd() * TAU });
       }
     },
 
     /** Turns battle events into the effects that show them. */
     fromEvent: function (e, state, now) {
       if (e.kind === 'airbattle') {
-        Effects.dogfight({ x: e.x, y: e.y }, now, (e.cap || 0) / 3 + (e.shotDown || 0), Math.ceil((e.shotDown || 0) / 3) + Math.ceil((e.capLosses || 0) / 2));
+        Effects.dogfight({ x: e.x, y: e.y }, now, (e.cap || 0) / 3 + (e.shotDown || 0), Math.ceil((e.shotDown || 0) / 3) + Math.ceil((e.capLosses || 0) / 2), e.from);
       } else if (e.kind === 'bombing') {
         let k = 0;
         let hits = 0;
@@ -103,6 +105,7 @@
         if (p < 0 || p > 1) continue;
         let s = cam.toScreen(fx);
         if (fx.carrier && shipAt && shipAt[fx.carrier]) s = { x: shipAt[fx.carrier].x + fx.dx, y: shipAt[fx.carrier].y + fx.dy };
+        if (fx.ox) s = { x: s.x + fx.ox, y: s.y + fx.oy };
         if (fx.type === 'boom') Effects.drawBoom(ctx, s, p, fx, scale);
         else if (fx.type === 'splash') Effects.drawSplash(ctx, s, p, scale);
         else if (fx.type === 'tracers') Effects.drawTracers(ctx, s, p, fx, now);
@@ -156,9 +159,9 @@
       ctx.beginPath();
       ctx.arc(s.x, s.y, (2 + p * 7) * Math.min(scale, 2), 0, TAU);
       ctx.stroke();
-      ctx.fillStyle = 'rgba(255, 255, 255,' + (0.8 * (1 - p)) + ')';
+      ctx.fillStyle = 'rgba(230, 245, 255,' + (0.45 * (1 - p)) + ')';
       ctx.beginPath();
-      ctx.arc(s.x, s.y, (1 + 3 * Math.sin(p * Math.PI)) * scale, 0, TAU);
+      ctx.arc(s.x, s.y, (1 + 2 * Math.sin(p * Math.PI)) * Math.min(scale, 2), 0, TAU);
       ctx.fill();
       ctx.restore();
     },
@@ -166,7 +169,8 @@
     drawTracers: function (ctx, s, p, fx, now) {
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
-      ctx.lineWidth = 1.3;
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
       for (let i = 0; i < fx.lines.length; i++) {
         const L = fx.lines[i];
         const q = (p * 1.6 + L.start) % 1;
@@ -174,7 +178,7 @@
         const a = L.a + L.spin * q;
         const x = s.x + Math.cos(a) * L.r;
         const y = s.y + Math.sin(a) * L.r * 0.7;
-        ctx.strokeStyle = L.warm ? 'rgba(255, 210, 120,' + (1 - q) + ')' : 'rgba(255, 140, 90,' + (1 - q) + ')';
+        ctx.strokeStyle = L.warm ? 'rgba(255, 236, 120,' + (1 - q) + ')' : 'rgba(255, 120, 60,' + (1 - q) + ')';
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(x + Math.cos(a + 1.4) * L.len, y + Math.sin(a + 1.4) * L.len);
@@ -250,7 +254,7 @@
         ctx.globalCompositeOperation = 'lighter';
         const glowR = (9 + 7 * intensity) * scale * (0.9 + 0.1 * Math.sin(now * 9 + seed));
         const g = ctx.createRadialGradient(x, y, 0, x, y, glowR);
-        g.addColorStop(0, 'rgba(255, 170, 80,' + (0.35 * intensity + 0.15) + ')');
+        g.addColorStop(0, 'rgba(255, 150, 60,' + (0.45 * intensity + 0.15) + ')');
         g.addColorStop(1, 'rgba(200, 40, 10, 0)');
         ctx.fillStyle = g;
         ctx.beginPath();
@@ -262,7 +266,7 @@
       ctx.restore();
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
-      const glowR = (5 + 4 * intensity) * scale;
+      const glowR = (3 + 3 * intensity) * Math.min(scale, 3);
       const g = ctx.createRadialGradient(x, y, 0, x, y, glowR);
       g.addColorStop(0, 'rgba(255, 190, 90,' + (0.55 * intensity + 0.2) + ')');
       g.addColorStop(0.5, 'rgba(230, 90, 30,' + (0.3 * intensity + 0.1) + ')');
@@ -278,7 +282,7 @@
         ctx.beginPath();
         const along = (i - 2) * 4 * scale;
         const hr = ((heading || 0) * Math.PI) / 180;
-        ctx.arc(x + Math.sin(hr) * along + Math.sin(i * 1.3) * 1.5 * scale, y - Math.cos(hr) * along, (1.2 + f * 1.8) * scale, 0, TAU);
+        ctx.arc(x + Math.sin(hr) * along + Math.sin(i * 1.3) * 1.5 * scale, y - Math.cos(hr) * along, (0.8 + f * 1.3) * Math.min(scale, 3), 0, TAU);
         ctx.fill();
       }
       ctx.restore();

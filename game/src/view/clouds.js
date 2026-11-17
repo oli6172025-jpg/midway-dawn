@@ -59,9 +59,11 @@
             continue;
           }
           const lit = 0.8 + 0.2 * detail;
-          d[o] = Math.min(255, 228 * lit + warm[0] * 0.12);
-          d[o + 1] = Math.min(255, 232 * lit + warm[1] * 0.08);
-          d[o + 2] = Math.min(255, 238 * lit + warm[2] * 0.05);
+          // Cloud tops take the colour of the light: white at noon, gold and rose at dawn and dusk.
+          const glow = Math.min(1, warm[3] * 4);
+          d[o] = Math.min(255, 228 * lit * (1 - glow * 0.1) + warm[0] * 0.3 * glow);
+          d[o + 1] = Math.min(255, 232 * lit * (1 - glow * 0.3) + warm[1] * 0.2 * glow);
+          d[o + 2] = Math.min(255, 238 * lit * (1 - glow * 0.45) + warm[2] * 0.15 * glow);
           d[o + 3] = Math.round(255 * Math.min(0.5, c * 0.55));
           s[o] = 2;
           s[o + 1] = 10;

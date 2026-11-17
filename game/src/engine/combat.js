@@ -187,6 +187,7 @@
       f.result = parts.length ? 'hits' : 'miss';
       MD.Events.emit(state, 'airbattle', 'both', '', {
         x: g.x, y: g.y, attacker: f.side, cap: capN, shotDown: battle.shotDown + battle.escortLosses, capLosses: battle.capLosses, group: g.id,
+        from: MD.Geo.bearing(g, f.origin),
       });
       MD.Events.emit(state, 'bombing', 'both', headline + ' ' + body, {
         x: g.x, y: g.y, attacker: f.side, group: g.id, tally: bombs.tally, flight: f.id, pause: true, urgent: g.side === 'J' || parts.length > 0,

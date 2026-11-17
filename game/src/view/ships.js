@@ -94,13 +94,19 @@
       ctx.fill();
       ctx.restore();
       // Hull.
-      ctx.fillStyle = dead ? '#2a2724' : opts.side === 'J' ? '#4a4f55' : '#5a6672';
+      ctx.fillStyle = dead ? '#4a4038' : opts.side === 'J' ? '#4a4f55' : '#5a6672';
       hullPath(ctx, len, beam);
       ctx.fill();
+      if (dead) {
+        // A burning ship keeps her outline against the smoke.
+        ctx.strokeStyle = 'rgba(255, 200, 150, 0.7)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
       // Flight deck, overhanging the hull.
       const deckTop = -len * 0.42;
       const deckLen = len * 0.86;
-      ctx.fillStyle = dead ? '#3b2a20' : opts.side === 'J' ? '#b8915d' : '#8f8b7d';
+      ctx.fillStyle = dead ? '#7a5636' : opts.side === 'J' ? '#b8915d' : '#8f8b7d';
       ctx.fillRect(-deckW / 2, deckTop, deckW, deckLen);
       // Deck planking lines and the elevators.
       ctx.strokeStyle = dead ? 'rgba(0,0,0,0.3)' : 'rgba(60, 40, 20, 0.35)';

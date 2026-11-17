@@ -21,9 +21,10 @@
     for (let k = 0; k < tries; k++) {
       const s = MD.Sim.create({ seed: seed + k, difficulty: 'historical' });
       const mem = MD.Autopilot.create(style);
+      // Checked after every step, the last one included: the decisive strike often ends the battle.
       while (!s.over) {
-        if (pred(s)) return { seed: seed + k, t: s.t };
         MD.Sim.step(s, MD.Autopilot.orders(s, mem));
+        if (pred(s)) return { seed: seed + k, t: s.t };
       }
     }
     return null;
@@ -38,14 +39,31 @@
     return intact && scouts >= 2 && s.intel.J.some(function (r) { return r.kind === 'carriers'; });
   }
 
+  /** A carrier set ablaze in the evening light, with Japan ahead on points: the cover. */
+  function duskImpactMoment(s) {
+    if (s.t < 720) return false;
+    const sc = MD.Sim.score(s);
+    if (sc.J <= sc.A || MD.Forces.sideCarriers(s, 'J').filter(MD.Forces.fighting).length < 3) return false;
+    // Out at sea, clear of Midway, so the frame is the carriers and the strike alone.
+    for (let i = s.log.length - 1; i >= 0 && s.log[i].t === s.t; i--) {
+      const e = s.log[i];
+      if (e.kind === 'bombing' && e.attacker === 'J' && (MD.Geo.dist(s.groups[e.group], { x: 0, y: 0 }) < 60 || MD.Geo.dist(s.groups[e.group], s.groups.KB) < 45)) return false;
+    }
+    return impactMomentAny(s, 1);
+  }
+
   function impactMoment(s) {
+    return impactMomentAny(s, 2);
+  }
+
+  function impactMomentAny(s, minTargets) {
     for (let i = s.log.length - 1; i >= 0 && s.log[i].t === s.t; i--) {
       const e = s.log[i];
       if (e.kind !== 'bombing' || e.attacker !== 'J') continue;
       let fatal = 0;
       for (const id in e.tally) if (e.tally[id].before !== 'fatal' && s.carriers[id].status === 'fatal') fatal++;
       const ours = MD.Forces.sideCarriers(s, 'J').filter(MD.Forces.fighting).length;
-      if (fatal >= 1 && Object.keys(e.tally).length >= 2 && ours >= 3) return true;
+      if (fatal >= 1 && Object.keys(e.tally).length >= minTargets && ours >= (minTargets > 1 ? 3 : 2)) return true;
     }
     return false;
   }
@@ -96,7 +114,7 @@
         return;
       }
       if (n === 4) return Showcase.debrief(app, seed);
-      const found = findMoment(seed, 'aggressive', n === 2 ? strikeMoment : impactMoment, 40) || { seed: seed, t: 400 };
+      const found = (n === 3 ? findMoment(seed, 'aggressive', duskImpactMoment, 60) : null) || findMoment(seed, 'aggressive', n === 2 ? strikeMoment : impactMoment, 40) || { seed: seed, t: 400 };
       app.startBattle(found.seed, 'historical');
       document.getElementById('tutorial').classList.add('hidden');
       Showcase.until = found.t;
@@ -162,18 +180,15 @@
         else if (e.kind === 'bombing') MD.Effects.fromEvent(e, s, now - 2.6);
         else if (e.kind === 'damage') MD.Effects.fromEvent(e, s, now - 3.4);
       }
-      // A second wave of bursts still landing beside the hulls, so the frame shows the attack at its height.
-      for (const id in hit.tally) {
-        const c = s.carriers[id];
-        MD.Effects.explosion(c, now - 0.6, false, id);
-        MD.Effects.explosion(c, now - 0.9, false, id);
-      }
-      const ids = Object.keys(hit.tally);
-      for (let i = 0; i < 4; i++) MD.Effects.splash(s.carriers[ids[i % ids.length]], now - 0.3 - i * 0.2, ids[i % ids.length]);
+
+
       const burning = Object.keys(hit.tally).map(function (id) { return s.carriers[id]; }).filter(function (c) { return c.status === 'fatal'; })[0];
       const focus = burning || g;
       void focus;
-      app.camera.jump({ x: g.x + 3, y: g.y - 0.5 }, 5);
+      // Look past the target, away from our own fleet, so the burning ships sit in the middle of the chart.
+      const kb = s.groups.KB;
+      const away = MD.Geo.dist(kb, g) > 1 ? MD.Geo.polar(MD.Geo.bearing(kb, g), 4, g) : g;
+      app.camera.jump({ x: away.x + 2, y: away.y }, 5);
       MD.Cards.update();
     },
 
